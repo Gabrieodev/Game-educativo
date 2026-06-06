@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🌿 EcoGames — Plataforma de Educação Ambiental Gamificada
+# EcoGames
 
-**Aprender sobre sustentabilidade nunca foi tão interativo.**
+**Gamified environmental education platform — three independent minigames, one modular fullstack architecture.**
 
 [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
@@ -14,41 +14,31 @@
 
 ---
 
-## 📖 Visão Geral
+## Overview
 
-**EcoGames** (repositório: `Game-educativo`) é uma plataforma web educativa que transforma conceitos de sustentabilidade e educação ambiental em experiências gamificadas, interativas e progressivas.
+**EcoGames** is a web platform that transforms sustainability and environmental education into gamified, progressive experiences. A central lobby connects three independent minigames — each addressing a distinct environmental theme — backed by a single shared Node.js/Express server with fully decoupled game modules.
 
-A plataforma é composta por um **lobby central** e **3 minigames independentes**, cada um abordando uma temática ambiental específica. A arquitetura foi projetada para ser modular e escalável, permitindo a adição de novos jogos sem impacto nos módulos existentes.
-
----
-
-## 🎯 Objetivos do Projeto
-
-- **Educação ambiental** — ensinar conceitos de sustentabilidade de forma lúdica e acessível
-- **Gamificação do aprendizado** — transformar conteúdos educativos em experiências interativas e progressivas
-- **Arquitetura modular fullstack** — consolidar boas práticas de desenvolvimento com separação de responsabilidades
-- **Escalabilidade** — estrutura preparada para receber novos jogos com mínimo de acoplamento
-- **Impacto social** — promover consciência ambiental por meio da tecnologia
+The architecture is designed for modularity: adding a new game requires no changes to existing modules.
 
 ---
 
-## 🏗️ Arquitetura Geral
+## Platform Architecture
 
 ```
 ┌─────────────────────────────────────────────────────┐
 │                     index.html                      │
-│              (Ponto de entrada / redirect)          │
+│                  (entry point / redirect)           │
 └──────────────────────┬──────────────────────────────┘
                        │
                        ▼
 ┌─────────────────────────────────────────────────────┐
 │                 lobby/lobby.html                    │
-│              (Hub central da plataforma)            │
+│                  (platform hub)                     │
 └──────────┬─────────────────┬──────────────┬─────────┘
            │                 │              │
            ▼                 ▼              ▼
 ┌──────────────────┐ ┌──────────────┐ ┌───────────────────┐
-│   greenmemo/     │ │   ecohero/   │ │    TrashDash/     │
+│   greenmemo/     │ │   ecohero/   │ │    trashdash/     │
 │   (frontend)     │ │  (fullstack) │ │   (fullstack)     │
 └──────────────────┘ └──────┬───────┘ └────────┬──────────┘
                             │                   │
@@ -61,45 +51,57 @@ A plataforma é composta por um **lobby central** e **3 minigames independentes*
                          └────────────────────────┘
 ```
 
-A plataforma possui um **único backend Node.js/Express** compartilhado por todos os jogos, mas a lógica de cada jogo é completamente **desacoplada** — com controllers e routes próprios por domínio.
+---
+
+## Modularisation Philosophy
+
+Each game is treated as an independent module. There is no global player, ranking, progress or score entity — every game defines its own data model and rules, evolving without impacting the others.
+
+| Aspect | GreenMemo | EcoHero | TrashDash |
+|---|---|---|---|
+| Type | Frontend standalone | Fullstack | Fullstack |
+| Persistence | In-memory | JSON Database | JSON Database |
+| Ranking | — | ✓ | ✓ |
+| Shared backend | — | ✓ | ✓ |
+| Audio | ✓ | ✓ | ✓ |
+| Dedicated ranking screen | — | ✓ | ✓ (`ranking.html`) |
 
 ---
 
-## 📁 Estrutura de Pastas
+## Folder Structure
 
 ```plaintext
-Game-educativo/
+ecogames/
 │
-├── index.html                      # Ponto de entrada → redireciona para o lobby
+├── index.html                          # Entry point → redirects to lobby
 ├── .gitignore
-├── package-lock.json
 │
-├── lobby/                          # Hub central da plataforma
+├── lobby/                              # Platform navigation hub
 │   ├── css/
 │   └── lobby.html
 │
-├── greenmemo/                      # Jogo 1: Jogo da memória educativo (frontend)
+├── greenmemo/                          # Game 1: Educational memory game (frontend only)
 │   └── frontend/
 │       ├── audio/
 │       ├── css/
 │       ├── js/
 │       └── greenmemo.html
 │
-├── ecohero/                        # Jogo 2: Gestão ambiental (fullstack)
+├── ecohero/                            # Game 2: Environmental management (fullstack)
 │   └── frontend/
 │       ├── audio/
 │       ├── css/
 │       ├── js/
 │       └── ecohero.html
 │
-├── TrashDash/                      # Jogo 3: Esteira de reciclagem (fullstack)
+├── trashdash/                          # Game 3: Recycling conveyor (fullstack)
 │   ├── audio/
 │   ├── css/
 │   ├── js/
 │   ├── ranking.html
-│   └── TrashDash.html
+│   └── trashdash.html
 │
-└── backend/                        # Backend compartilhado
+└── backend/                            # Shared backend
     ├── controllers/
     │   ├── ecohero.city.controller.js
     │   ├── ecohero.player.controller.js
@@ -113,119 +115,80 @@ Game-educativo/
     ├── services/
     │   ├── ecohero.city.service.js
     │   └── ecohero.ranking.service.js
-    ├── node_modules/
     ├── database.json
-    ├── package-lock.json
     ├── package.json
     └── server.js
 ```
 
 ---
 
-## 🧩 Filosofia de Modularização
+## Tech Stack
 
-Cada jogo é tratado como um **mini módulo independente** dentro da plataforma. Não existe lógica global de player, ranking, progresso ou pontuação — pois cada jogo possui regras completamente distintas.
-
-| Aspecto | GreenMemo | EcoHero | TrashDash |
-|---|---|---|---|
-| Tipo | Frontend standalone | Fullstack | Fullstack |
-| Persistência | Local (memória) | JSON Database | JSON Database |
-| Ranking | ✗ | ✓ | ✓ |
-| Backend próprio | ✗ | ✓ | ✓ |
-| Áudio | ✓ | ✓ | ✓ |
-| Tela de ranking | ✗ | ✓ | ✓ (ranking.html) |
-
-Isso garante que a adição de um novo jogo não impacte os demais e que cada módulo evolua de forma independente.
+| Layer | Technologies |
+|---|---|
+| Frontend | HTML5, CSS3, JavaScript ES6+ (Vanilla) |
+| Audio | Web Audio API — native, no external dependencies |
+| Backend | Node.js, Express.js |
+| Persistence | JSON flat file (`database.json`) |
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Games
 
-### Frontend
-- **HTML5** — estrutura semântica das páginas e jogos
-- **CSS3** — animações, flip 3D, responsividade e temas visuais por fase
-- **JavaScript Vanilla** — lógica de jogo, manipulação de DOM e estados
-- **Web Audio API** — efeitos sonoros e trilhas em todos os jogos
+### GreenMemo — Sustainable Memory Game
 
-### Backend
-- **Node.js** — runtime do servidor
-- **Express.js** — roteamento e API REST
+Educational memory game built entirely with HTML, CSS and Vanilla JavaScript — no frameworks. Five progressive phases, each with its own visual theme driven by CSS custom properties swapped at runtime.
 
-### Persistência
-- **JSON Database** (`database.json`) — banco de dados leve, sem dependência de SGBDs externos
+**Core mechanics:**
+- Real CSS 3D flip via `rotateY`, `backface-visibility` and `transform-style: preserve-3d`
+- `shake` animation on mismatch, reduced opacity on matched pairs
+- HUD system tracking lives, score and current phase
+- Native audio effects per phase
 
----
+**Phase system:**
 
-## 🕹️ Jogos da Plataforma
+| Phase | Theme |
+|---|---|
+| 1 | Water Guardians |
+| 2 | Living Forest |
+| 3 | Clean Energy |
+| 4 | Smart Recycling |
+| 5 | Living Oceans |
 
-### 🌿 GreenMemo — Jogo da Memória Sustentável
+**Rules:** 5 lives per phase · +10 points per matched pair · life lost on mismatch · game over at zero lives · phase 5 completion triggers trophy screen with star rating and badges.
 
-Jogo da memória educativo desenvolvido inteiramente com HTML, CSS e JavaScript puro — sem frameworks. Aborda temáticas ambientais através de 5 fases progressivas. Totalmente frontend, sem dependência do backend.
-
-**Mecânica principal:**
-- Flip 3D real via CSS (`rotateY`, `backface-visibility`, `transform-style: preserve-3d`)
-- Animação `shake` para erros e opacidade reduzida para pares acertados
-- Sistema de HUD com vidas, pontuação e fase atual
-- Efeitos sonoros via pasta `audio/`
-
-**Sistema de fases:**
-
-| Fase | Tema | Emoji |
-|------|------|-------|
-| 1 | Guardiões da Água | 🌊 |
-| 2 | Floresta Viva | 🌳 |
-| 3 | Energia Limpa | ⚡ |
-| 4 | Reciclagem Inteligente | ♻️ |
-| 5 | Oceanos Vivos | 🐠 |
-
-Cada fase possui tema visual próprio com variáveis CSS customizadas e uma curiosidade educativa exibida ao final.
-
-**Regras:**
-- 5 vidas por fase
-- +10 pontos por par encontrado
-- Erro desconta uma vida
-- Ao zerar vidas: game over
-- Fase 5 concluída: tela final com troféu animado, pontuação total, sistema de estrelas e badges
-
-**Telas do jogo:**
-1. Lobby interno com partículas flutuantes e pills das fases
-2. Tabuleiro com HUD ativo
-3. Modal de fase concluída com curiosidade educativa
-4. Modal de game over com opções de retry ou volta ao lobby
-5. Tela final com animações e conquistas
-
-**Engine — 15 seções organizadas:**
+**Game engine — 15 organised sections:**
 
 ```
-1. Dados das fases        6. Carregamento        11. Reinício
-2. Estado global          7. Construção do board  12. HUD
-3. Seletores DOM          8. Preview inicial      13. Utilitários
-4. Navegação              9. Lógica de clique     14. Event listeners
-5. Aplicação de tema     10. Eventos              15. Init
+1. Phase data          6. Loading            11. Restart
+2. Global state        7. Board construction  12. HUD
+3. DOM selectors       8. Initial preview     13. Utilities
+4. Navigation          9. Click logic         14. Event listeners
+5. Theme application  10. Events             15. Init
 ```
 
-**Fontes:** Righteous + Nunito | **Responsivo:** até 380px
+Fonts: Righteous + Nunito | Responsive down to 380px
 
 ---
 
-### 🦸 EcoHero — Jogo Fullstack de Gestão Ambiental
+### EcoHero — Environmental Management Game
 
-EcoHero é um jogo fullstack com integração completa ao backend, persistência em JSON e sistema de ranking. O frontend conta com trilha sonora e efeitos de áudio.
+Fullstack game with complete backend integration, JSON persistence and a global ranking system.
 
-**Funcionalidades:**
-- Gerenciamento de jogadores e perfis
-- Sistema de cidades com progresso individual
-- Ranking global persistido
-- APIs REST dedicadas por domínio
-- Efeitos sonoros via pasta `audio/`
+**Features:**
+- Player and profile management
+- City progression system
+- Persistent global ranking
+- Dedicated REST APIs per domain
+- Native audio effects
 
-**Módulos do backend:**
+**Backend modules:**
 
 ```plaintext
 controllers/
-├── ecohero.city.controller.js      # Lógica de cidades
-├── ecohero.player.controller.js    # Gestão de jogadores
-└── ecohero.ranking.controller.js   # Sistema de ranking
+├── ecohero.city.controller.js       # City logic
+├── ecohero.player.controller.js     # Player management
+└── ecohero.ranking.controller.js    # Ranking system
 
 routes/
 ├── ecohero.city.routes.js
@@ -237,193 +200,163 @@ services/
 └── ecohero.ranking.service.js
 ```
 
-Cada camada (controller → service → persistência) segue separação clara de responsabilidades.
+Each layer (controller → service → persistence) maintains strict separation of responsibilities.
 
 ---
 
-### 🗑️ TrashDash — Esteira de Reciclagem Interativa
+### TrashDash — Interactive Recycling Conveyor
 
-TrashDash é o terceiro jogo da plataforma, com integração fullstack e tela de ranking dedicada (`ranking.html`). O jogador opera uma esteira rolante e deve classificar os resíduos que surgem, jogando cada item na lata de reciclagem correta antes que saiam da tela.
+Fullstack game with a dedicated ranking screen (`ranking.html`). Players operate a moving conveyor belt, classifying waste items into the correct recycling bins before they leave the screen.
 
-**Mecânica principal:**
-- Esteira rolante com itens surgindo dinamicamente na tela
-- Categorias de resíduos representadas por latas de reciclagem distintas
-- Classificação correta concede pontos; erro penaliza a pontuação
-- Efeitos sonoros e trilha via pasta `audio/`
+**Core mechanics:**
+- Dynamically spawned items on a scrolling conveyor
+- Distinct recycling bins per waste category
+- Correct classification scores points; incorrect penalises
+- Native audio effects and soundtrack
 
-**Estrutura de telas:**
-- `TrashDash.html` — tela principal do jogo
-- `ranking.html` — tela dedicada ao ranking global de jogadores
-
-**Módulos do backend:**
+**Backend modules:**
 
 ```plaintext
 controllers/
-└── trashdash.controller.js         # Lógica de pontuação e ranking
+└── trashdash.controller.js          # Score and ranking logic
 
 routes/
-└── trashdash.routes.js             # Endpoints REST do TrashDash
+└── trashdash.routes.js              # TrashDash REST endpoints
 ```
-
-**Temática educativa:**
-O jogo reforça conceitos de separação correta de resíduos e coleta seletiva, ensinando ao jogador quais materiais vão em cada categoria de reciclagem de forma prática e dinâmica.
 
 ---
 
-## 🖥️ Lobby Principal
+## Lobby
 
-O lobby funciona como homepage da plataforma e ponto de navegação central.
+The lobby serves as the platform homepage and central navigation hub.
 
-**Componentes:**
-
-| Seção | Descrição |
+| Section | Content |
 |---|---|
-| Header | Nome EcoGames + tagline "Educação Ambiental Interativa" |
-| Hero | "Bem-vindo, Guardião do Planeta" + botão "Iniciar Missão" |
-| Missão | Apresentação do propósito educacional |
-| Stat Cards | 3 jogos · 100% interativo · Impacto Sustentável |
-| Grid de jogos | Cards clicáveis para cada minigame |
+| Header | EcoGames name and tagline |
+| Hero | Welcome message and call-to-action |
+| Mission | Educational purpose statement |
+| Stat cards | 3 games · 100% interactive · Sustainable impact |
+| Game grid | Clickable cards for each minigame |
 | Footer | Copyright 2026 |
 
 ---
 
-## 🚀 Como Executar Localmente
+## Architectural Decisions
 
-### Pré-requisitos
+**Single backend, independent modules** — A single Express server handles all game APIs, avoiding the complexity of multiple processes. Independence between games is enforced by a prefix-based naming convention across all backend files (`ecohero.*`, `trashdash.*`), which scales naturally as new games are added.
 
-- [Node.js](https://nodejs.org/) v18 ou superior
-- npm v9 ou superior
+**No global state between games** — There is no shared `player`, `ranking` or `score` entity. Each game defines its own data model entirely, meaning one game's rules can evolve without any risk of affecting the others.
 
-### 1. Clone o repositório
+**JSON as the persistence layer** — `database.json` eliminates external database setup, making the project immediately runnable and straightforward for an educational and portfolio context.
+
+**GreenMemo as a fully standalone frontend** — GreenMemo has zero backend dependency and runs entirely in the browser. EcoHero and TrashDash use the shared backend only for ranking persistence, keeping all gameplay logic client-side.
+
+**Web Audio API throughout** — All three games use their own `audio/` folder with native browser audio — no external libraries, no CDN dependency, consistent immersive experience across the platform.
+
+**Real CSS 3D flip — no JavaScript animation library** — GreenMemo's card flip uses only CSS transform properties, demonstrating CSS mastery and keeping the animation performant without runtime overhead.
+
+---
+
+## Technical Highlights
+
+- CSS custom properties swapped dynamically at runtime for per-phase visual themes
+- Game engine structured in 15 named sections for maintainability
+- Two independent fullstack games sharing a backend without coupling between them
+- TrashDash has a dedicated `ranking.html` as an independent page
+- Responsive layout down to 380px across all games
+- Zero frontend frameworks — Vanilla HTML, CSS and JS throughout
+
+---
+
+## Roadmap
+
+- [x] Central lobby with navigation between games
+- [x] GreenMemo — memory game with 5 themed phases
+- [x] EcoHero — fullstack game with ranking and city progression
+- [x] TrashDash — fullstack recycling conveyor with dedicated ranking
+- [ ] Global authentication system (unified login and profile)
+- [ ] Teacher administration panel
+- [ ] PWA — offline support for frontend-only games
+- [ ] Internationalisation (i18n) — English and Spanish support
+
+---
+
+## How to Run
+
+### Prerequisites
+
+- Node.js v18 or higher
+- npm v9 or higher
+
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Gabrieodev/Game-educativo.git
-cd Game-educativo
+git clone https://github.com/gabrieodev/ecogames.git
+cd ecogames
 ```
 
-### 2. Instale as dependências do backend
+### 2. Install backend dependencies
 
 ```bash
 cd backend
 npm install
 ```
 
-### 3. Inicie o servidor
+### 3. Start the server
 
 ```bash
 npm start
 ```
 
-O servidor estará disponível em `http://localhost:3000` (ou a porta configurada no `server.js`).
+The backend will be available at `http://localhost:3000`.
 
-### 4. Acesse a plataforma
+### 4. Open the platform
 
-Abra o `index.html` diretamente no navegador ou use um servidor estático:
+Open `index.html` directly in the browser or use a static server from the project root:
 
 ```bash
-# Na raiz do projeto
 npx serve .
 ```
 
-Acesse: `http://localhost:5000`
+Access: `http://localhost:5000`
 
 ---
 
-## 📜 Scripts Disponíveis
+## Available Scripts
 
-Execute a partir da pasta `/backend`:
+Run from the `/backend` directory:
 
-| Script | Comando | Descrição |
+| Script | Command | Description |
 |---|---|---|
-| Iniciar servidor | `npm start` | Sobe o Express em produção |
-| Modo desenvolvimento | `npm run dev` | Reinício automático com nodemon |
+| Start server | `npm start` | Runs Express in production mode |
+| Development mode | `npm run dev` | Auto-restart with nodemon |
 
 ---
 
-## 🔭 Roadmap
+## Contributing
 
-- [x] Lobby central com navegação entre jogos
-- [x] GreenMemo — jogo da memória com 5 fases temáticas
-- [x] EcoHero — jogo fullstack com ranking e sistema de cidades
-- [x] TrashDash — esteira de reciclagem fullstack com ranking dedicado
-- [ ] Sistema de autenticação global (login/perfil unificado)
-- [ ] Painel de administração para professores
-- [ ] PWA — suporte offline para os jogos frontend-only
-- [ ] Internacionalização (i18n) — suporte a inglês e espanhol
+To add a new minigame or improve an existing one:
 
----
-
-## ⚙️ Decisões Arquiteturais
-
-### Backend único, módulos independentes
-
-Optou-se por um único servidor Express para toda a plataforma, evitando a complexidade de múltiplos processos. A independência é garantida pelo prefixo de nomenclatura por jogo em todos os arquivos do backend:
-
-```
-ecohero.city.controller.js
-ecohero.ranking.service.js
-trashdash.controller.js
-trashdash.routes.js
-```
-
-### Sem estado global entre jogos
-
-Não existe entidade global de `player`, `ranking` ou `score`. Cada jogo define seu próprio modelo de dados, permitindo que as regras evoluam sem impacto nos demais módulos.
-
-### JSON como banco de dados
-
-O uso de `database.json` elimina a necessidade de configurar um SGBD, tornando o projeto simples de executar localmente e ideal para fins educacionais e de portfólio.
-
-### Frontend desacoplado
-
-GreenMemo não depende do backend de forma alguma — roda standalone. EcoHero e TrashDash integram o backend apenas para persistência de ranking e pontuação, mantendo toda a lógica de gameplay no cliente.
-
-### Áudio nativo em todos os jogos
-
-Todos os três jogos possuem pasta `audio/` própria, utilizando a Web Audio API do navegador sem dependências externas, reforçando a imersão educativa.
+1. Fork the repository
+2. Create a branch named after your game: `git checkout -b feat/game-name`
+3. Follow the established modular structure:
+   - Frontend with `audio/`, `css/`, `js/` folders and a main `.html` file
+   - If backend is needed, add modules with the `game-name.*` prefix
+   - Integrate the game card into the lobby
+4. Open a Pull Request with the game description and mechanics
 
 ---
 
-## 🌟 Diferenciais Técnicos
+## License
 
-- **Flip 3D real via CSS puro** — sem bibliotecas externas para as animações de carta do GreenMemo
-- **Temas visuais por fase** — variáveis CSS customizadas trocadas dinamicamente em runtime
-- **Engine organizada em seções** — arquivo único de 15 módulos funcionais para facilitar manutenção
-- **Arquitetura prefix-based** — convenção de nomenclatura (`ecohero.*`, `trashdash.*`) que escala naturalmente para N jogos
-- **Dois jogos fullstack independentes** — EcoHero e TrashDash compartilham o backend sem acoplamento entre si
-- **Áudio em todos os jogos** — experiência imersiva com efeitos sonoros nativos em cada minigame
-- **Tela de ranking dedicada** — TrashDash possui `ranking.html` como página independente
-- **Zero frameworks no frontend** — HTML, CSS e JS Vanilla em todos os jogos, demonstrando domínio dos fundamentos
-- **Design responsivo** — layout adaptado até 380px de largura
-
----
-
-## 🤝 Como Contribuir
-
-Contribuições são bem-vindas! Para adicionar um novo minigame ou melhorar os existentes:
-
-1. Faça um fork do repositório
-2. Crie uma branch com o nome do seu jogo: `git checkout -b feat/nome-do-jogo`
-3. Siga a estrutura modular estabelecida:
-   - Frontend com suas pastas `audio/`, `css/`, `js/` e arquivo `.html` principal
-   - Se necessário, adicione módulos no backend com prefixo `nome-do-jogo.*`
-   - Integre o card do jogo no lobby
-4. Abra um Pull Request com a descrição do jogo e suas mecânicas
-
----
-
-## 📄 Licença
-
-Este projeto está licenciado sob a [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
 <div align="center">
 
-**EcoGames** — Transformando educação ambiental em experiência.
+**EcoGames** — Environmental education through play.
 
-3 jogos · arquitetura modular · propósito real.
-
-Feito com 💚 e compromisso com o futuro do planeta.
+3 games · modular architecture · real-world purpose · Node.js · Express · Vanilla JS
 
 </div>
